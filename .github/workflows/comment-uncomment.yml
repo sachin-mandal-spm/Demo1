@@ -25,30 +25,31 @@ jobs:
 
           if [ "$DAY" -eq 5 ]; then
             echo "It's Friday evening. Commenting lines..."
-            sed -i '2s/^/# /' $FILE
-            git add $FILE
+            sed -i '2s/^/# /' "$FILE"
+            git add "$FILE"
             git commit -m "Commented line 2"
             git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
 
             echo "Waiting 10 seconds before commenting line 3..."
             sleep 10
 
-            sed -i '3s/^/# /' $FILE
-            git add $FILE
+            sed -i '3s/^/# /' "$FILE"
+            git add "$FILE"
             git commit -m "Commented line 3"
             git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
 
           elif [ "$DAY" -eq 1 ]; then
             echo "It's Monday morning. Uncommenting line 3..."
-            sed -i '3s/^# //' $FILE
-            git add $FILE
+            sed -i '3s/^# //' "$FILE"
+            git add "$FILE"
             git commit -m "Uncommented line 3"
             git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
 
             echo "Waiting 10 seconds before uncommenting line 2..."
             sleep 10
 
-            sed -i '2s/^# //' $FILE
-            git add $FILE
+            sed -i '2s/^# //' "$FILE"
+            git add "$FILE"
             git commit -m "Uncommented line 2"
             git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+          fi
