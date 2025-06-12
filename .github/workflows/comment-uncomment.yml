@@ -1,3 +1,4 @@
+
 name: Comment and Uncomment Lines
 
 on:
@@ -28,7 +29,8 @@ jobs:
             sed -i '2s/^/# /' "$FILE"
             git add "$FILE"
             git commit -m "Commented line 2"
-            git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git push origin main
 
             echo "Waiting 10 seconds before commenting line 3..."
             sleep 10
@@ -36,14 +38,16 @@ jobs:
             sed -i '3s/^/# /' "$FILE"
             git add "$FILE"
             git commit -m "Commented line 3"
-            git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git push origin main
 
           elif [ "$DAY" -eq 1 ]; then
             echo "It's Monday morning. Uncommenting line 3..."
             sed -i '3s/^# //' "$FILE"
             git add "$FILE"
             git commit -m "Uncommented line 3"
-            git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git push origin main
 
             echo "Waiting 10 seconds before uncommenting line 2..."
             sleep 10
@@ -51,5 +55,6 @@ jobs:
             sed -i '2s/^# //' "$FILE"
             git add "$FILE"
             git commit -m "Uncommented line 2"
-            git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
+            git push origin main
           fi
