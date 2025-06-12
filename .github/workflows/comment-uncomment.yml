@@ -31,7 +31,7 @@ jobs:
 
       - name: Modify file based on day
         run: |
-          DAY=$(date +%u)
+          DAY=5
           FILE="example.txt"
 
           if [ "$DAY" -eq 5 ]; then
