@@ -1,0 +1,57 @@
+
+name: Comment and Uncomment Lines
+
+on:
+  schedule:
+    # Friday 8 PM IST (2:30 PM UTC)
+    - cron: '30 14 * * 5'
+    # Monday 8 AM IST (2:30 AM UTC)
+    - cron: '30 2 * * 1'
+
+jobs:
+  modify-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Modify file based on day
+        run: |
+          DAY=$(date +%u)
+          FILE="example.txt"
+
+          if [ "$DAY" -eq 5 ]; then
+            echo "It's Friday evening. Commenting lines..."
+            sed -i '2s/^/# /' $FILE
+            git add $FILE
+            git commit -m "Commented line 2"
+            git push
+
+            echo "Waiting 1 hour before commenting line 3..."
+            sleep 3600
+
+            sed -i '3s/^/# /' $FILE
+            git add $FILE
+            git commit -m "Commented line 3"
+            git push
+
+          elif [ "$DAY" -eq 1 ]; then
+            echo "It's Monday morning. Uncommenting line 3..."
+            sed -i '3s/^# //' $FILE
+            git add $FILE
+            git commit -m "Uncommented line 3"
+            git push
+
+            echo "Waiting 1 hour before uncommenting line 2..."
+            sleep 3600
+
+            sed -i '2s/^# //' $FILE
+            git add $FILE
+            git commit -m "Uncommented line 2"
+            git push
+          fi
