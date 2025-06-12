@@ -7,16 +7,14 @@
 #     - cron: '30 14 * * 5'
 #     # Monday 8 AM IST (2:30 AM UTC)
 #     - cron: '30 2 * * 1'
-
 name: Comment and Uncomment Lines
 
 on:
-  workflow_dispatch:  #  This enables manual trigger
-  schedule:
-    # Friday 8 PM IST (2:30 PM UTC)
-    - cron: '30 14 * * 5'
-    # Monday 8 AM IST (2:30 AM UTC)
-    - cron: '30 2 * * 1'
+  workflow_dispatch:  # Enables manual trigger
+  schedule:
+    - cron: '30 14 * * 5'  # Friday 8 PM IST (2:30 PM UTC)
+    - cron: '30 2 * * 1'   # Monday 8 AM IST (2:30 AM UTC)
+
 
 
 jobs:
@@ -44,7 +42,7 @@ jobs:
             git push
 
             echo "Waiting 1 hour before commenting line 3..."
-            sleep 3600
+            sleep 10
 
             sed -i '3s/^/# /' $FILE
             git add $FILE
@@ -59,7 +57,7 @@ jobs:
             git push
 
             echo "Waiting 1 hour before uncommenting line 2..."
-            sleep 3600
+            sleep 10
 
             sed -i '2s/^# //' $FILE
             git add $FILE
