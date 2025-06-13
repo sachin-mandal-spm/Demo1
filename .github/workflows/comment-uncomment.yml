@@ -13,6 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Debug: List Files
+        run: ls -R $GITHUB_WORKSPACE
+
       - name: Set up Git
         run: |
           git config user.name "github-actions"
@@ -20,7 +23,7 @@ jobs:
 
       - name: Modify file based on day
         run: |
-          FILE="Demo1/example.txt"  # Update file path as needed
+          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
           DAY=$(date +%u)  # Get current day of the week (1=Monday, 5=Friday)
 
           if [ "$DAY" -eq 5 ]; then
@@ -35,7 +38,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add "$FILE"
+          git add "$GITHUB_WORKSPACE/Demo1/example.txt"
           git commit -m "Automated update for line 2 and 3 based on schedule" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
           git push origin main
