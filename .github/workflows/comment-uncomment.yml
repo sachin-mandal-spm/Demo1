@@ -2,10 +2,9 @@ name: Comment and Uncomment Lines for example1.txt
 
 on:
   schedule:
-    # Schedule for 6:50 PM IST (1:20 PM UTC)
-    - cron: "20 13 * * 5"
-    # Schedule for 6:55 PM IST (1:25 PM UTC)
-    - cron: "25 13 * * 5"
+    # Trigger every Friday at 7:20 PM IST to 7:35 PM IST (1:50 PM to 2:05 PM UTC)
+    - cron: "50 13 * * 5"
+    - cron: "00 14 * * 5"
   workflow_dispatch:  # Allow manual trigger for testing
 
 jobs:
@@ -26,25 +25,23 @@ jobs:
             exit 1
           fi
 
-      - name: Modify file based on time
+      - name: Modify file based on time range
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           CURRENT_HOUR=$(date -u +%H)   # Get current hour in UTC
           CURRENT_MINUTE=$(date -u +%M) # Get current minute in UTC
-          TARGET_HOUR=13  # 6:50 PM IST = 1:20 PM UTC
+          TARGET_HOUR=13  # 7:20 PM IST = 1:50 PM UTC
           
           echo "Current time: $CURRENT_HOUR:$CURRENT_MINUTE (UTC)"
           
-          if [ "$CURRENT_HOUR" -eq "$TARGET_HOUR" ] && [ "$CURRENT_MINUTE" -eq 20 ]; then
-            echo "It's 6:50 PM IST. Commenting lines 2 and 3."
+          if [ "$CURRENT_HOUR" -eq "$TARGET_HOUR" ] && [ "$CURRENT_MINUTE" -ge 50 ] && [ "$CURRENT_MINUTE" -lt 55 ]; then
+            echo "Between 7:20 PM and 7:25 PM IST. Commenting line 1."
+            sed -i '1s/^/# /' "$FILE"
+          elif [ "$CURRENT_HOUR" -eq "$TARGET_HOUR" ] && [ "$CURRENT_MINUTE" -ge 60 ] && [ "$CURRENT_MINUTE" -lt 65 ]; then
+            echo "Between 7:30 PM and 7:35 PM IST. Commenting line 2."
             sed -i '2s/^/# /' "$FILE"
-            sed -i '3s/^/# /' "$FILE"
-          elif [ "$CURRENT_HOUR" -eq "$TARGET_HOUR" ] && [ "$CURRENT_MINUTE" -eq 25 ]; then
-            echo "It's 6:55 PM IST. Uncommenting lines 2 and 3."
-            sed -i '3s/^# //' "$FILE"
-            sed -i '2s/^# //' "$FILE"
           else
-            echo "Current time does not match any scheduled action."
+            echo "Current time does not fall within any specified range."
           fi
 
       - name: Debug:Check file content after modification
