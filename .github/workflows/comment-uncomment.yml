@@ -13,10 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug: List Files and Directories
+      - name: Debug:List Files and Directories
         run: ls -R $GITHUB_WORKSPACE
 
-      - name: Debug: Check FILE variable
+      - name: Debug:Check FILE variable
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           echo "FILE path is: $FILE"
