@@ -30,7 +30,7 @@ jobs:
             echo "No action needed."
           fi
 
-      - name: Debug: Check file content after modification
+      - name: Debug:Check file content after modification
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content after modification:"
