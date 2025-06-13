@@ -1,4 +1,3 @@
-
 name: Comment and Uncomment Lines
 
 on:
@@ -21,40 +20,22 @@ jobs:
 
       - name: Modify file based on day
         run: |
-          DAY=5  # Simulate Friday for testing
-          FILE="example.txt"
+          FILE="Demo1/example.txt"  # Update file path as needed
+          DAY=$(date +%u)  # Get current day of the week (1=Monday, 5=Friday)
 
           if [ "$DAY" -eq 5 ]; then
             echo "It's Friday evening. Commenting lines..."
             sed -i '2s/^/# /' "$FILE"
-            git add "$FILE"
-            git commit -m "Commented line 2"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
-            git push origin main
-
-            echo "Waiting 10 seconds before commenting line 3..."
-            sleep 10
-
             sed -i '3s/^/# /' "$FILE"
-            git add "$FILE"
-            git commit -m "Commented line 3"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
-            git push origin main
-
           elif [ "$DAY" -eq 1 ]; then
-            echo "It's Monday morning. Uncommenting line 3..."
+            echo "It's Monday morning. Uncommenting lines..."
             sed -i '3s/^# //' "$FILE"
-            git add "$FILE"
-            git commit -m "Uncommented line 3"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
-            git push origin main
-
-            echo "Waiting 10 seconds before uncommenting line 2..."
-            sleep 10
-
             sed -i '2s/^# //' "$FILE"
-            git add "$FILE"
-            git commit -m "Uncommented line 2"
-            git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/sachin-mandal-spm/Demo1.git
-            git push origin main
           fi
+
+      - name: Commit and push changes
+        run: |
+          git add "$FILE"
+          git commit -m "Automated update for line 2 and 3 based on schedule" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+          git push origin main
