@@ -14,7 +14,12 @@ jobs:
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content before modification:"
-          cat "$FILE"
+          if [ -f "$FILE" ]; then
+            cat "$FILE"
+          else
+            echo "File not found: $FILE"
+            exit 1
+          fi
 
       - name: Modify file based on simulated day
         run: |
@@ -34,7 +39,12 @@ jobs:
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content after modification:"
-          cat "$FILE"
+          if [ -f "$FILE" ]; then
+            cat "$FILE"
+          else
+            echo "File not found: $FILE"
+            exit 1
+          fi
 
       - name: Commit and push changes
         run: |
