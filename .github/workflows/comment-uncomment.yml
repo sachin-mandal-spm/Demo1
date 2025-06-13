@@ -1,4 +1,4 @@
-name: Comment and Uncomment Lines
+name: Comment and Uncomment Lines for example1.txt
 
 on:
   workflow_dispatch:  # Enable manual trigger
@@ -10,25 +10,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug:Print simulated day
+      - name: Debug: Check file content before modification
         run: |
-          DAY=5  # Simulate Friday for testing
-          echo "Simulated day is $DAY"
-
-      - name: Set up file path
-        run: |
-          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
-          echo "Using file at $FILE"
-
-      - name: Debug:Check file content before sed
-        run: |
-          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content before modification:"
           cat "$FILE"
 
       - name: Modify file based on simulated day
         run: |
-          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          FILE="$GITHUB_WORKSPACE/example1.txt"
           DAY=5  # Simulate Friday for testing
           if [ "$DAY" -eq 5 ]; then
             echo "It's Friday evening. Commenting lines..."
@@ -40,16 +30,16 @@ jobs:
             sed -i '2s/^# //' "$FILE"
           fi
 
-      - name: Debug:Check file content after sed
+      - name: Debug: Check file content after modification
         run: |
-          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content after modification:"
           cat "$FILE"
 
       - name: Commit and push changes
         run: |
-          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          FILE="$GITHUB_WORKSPACE/example1.txt"
           git add "$FILE"
-          git commit -m "Automated update for line 2 and 3 based on schedule" || echo "No changes to commit"
+          git commit -m "Automated update for example1.txt based on schedule" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
           git push origin main || echo "No changes to push"
