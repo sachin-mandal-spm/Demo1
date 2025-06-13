@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug: List Files
+      - name: Debug:List Files
         run: ls -R $GITHUB_WORKSPACE
 
       - name: Set up Git
