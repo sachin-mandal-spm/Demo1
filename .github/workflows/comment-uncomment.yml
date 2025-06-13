@@ -1,10 +1,7 @@
 name: Comment and Uncomment Lines
 
 on:
-  workflow_dispatch:  # Enables manual trigger
-  schedule:
-    - cron: '30 14 * * 5'  # Friday 8 PM IST (2:30 PM UTC)
-    - cron: '30 2 * * 1'   # Monday 8 AM IST (2:30 AM UTC)
+  workflow_dispatch:  # Enable manual trigger
 
 jobs:
   modify-file:
@@ -13,23 +10,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug:List Files and Directories
-        run: ls -R $GITHUB_WORKSPACE
-
-      - name: Debug:Check FILE variable
+      - name: Debug:Print simulated day
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "FILE path is: $FILE"
-          if [ ! -f "$FILE" ]; then
-            echo "Error: File not found at $FILE"
-            exit 1
-          fi
+          DAY=5  # Simulate Friday for testing
+          echo "Simulated day is $DAY"
 
-      - name: Modify file based on day
+      - name: Set up file path
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          DAY=$(date +%u)  # Get current day of the week (1=Monday, 5=Friday)
+          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          echo "Using file at $FILE"
 
+      - name: Debug:Check file content before sed
+        run: |
+          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          echo "File content before modification:"
+          cat "$FILE"
+
+      - name: Modify file based on simulated day
+        run: |
+          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
+          DAY=5  # Simulate Friday for testing
           if [ "$DAY" -eq 5 ]; then
             echo "It's Friday evening. Commenting lines..."
             sed -i '2s/^/# /' "$FILE"
@@ -40,20 +40,15 @@ jobs:
             sed -i '2s/^# //' "$FILE"
           fi
 
-      - name: Debug:Check file content after sed
+      - name: Debug: Check file content after sed
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
+          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
           echo "File content after modification:"
           cat "$FILE"
 
-      - name: Set up Git
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
       - name: Commit and push changes
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
+          FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
           git add "$FILE"
           git commit -m "Automated update for line 2 and 3 based on schedule" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
