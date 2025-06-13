@@ -40,7 +40,7 @@ jobs:
             sed -i '2s/^# //' "$FILE"
           fi
 
-      - name: Debug: Check file content after sed
+      - name: Debug:Check file content after sed
         run: |
           FILE="$GITHUB_WORKSPACE/Demo1/example.txt"
           echo "File content after modification:"
