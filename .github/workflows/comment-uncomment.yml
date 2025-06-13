@@ -10,7 +10,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug: Check file content before modification
+      - name: Debug:Check file content before modification
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content before modification:"
@@ -30,7 +30,7 @@ jobs:
             sed -i '2s/^# //' "$FILE"
           fi
 
-      - name: Debug: Check file content after modification
+      - name: Debug:Check file content after modification
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           echo "File content after modification:"
