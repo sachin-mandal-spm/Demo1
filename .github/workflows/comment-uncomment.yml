@@ -45,6 +45,10 @@ jobs:
             echo "File not found: $FILE"
             exit 1
           fi
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"    
 
       - name: Commit and push changes
         run: |
