@@ -13,10 +13,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug:List Files and Directories
+      - name: Debug: List Files and Directories
+        run: ls -R $GITHUB_WORKSPACE
+
+      - name: Debug: Check FILE variable
         run: |
-          echo "Workspace content:"
-          ls -R $GITHUB_WORKSPACE
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "FILE path is: $FILE"
+          if [ ! -f "$FILE" ]; then
+            echo "Error: File not found at $FILE"
+            exit 1
+          fi
 
       - name: Set up Git
         run: |
@@ -25,7 +32,7 @@ jobs:
 
       - name: Modify file based on day
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"  # Correct file path
+          FILE="$GITHUB_WORKSPACE/example.txt"
           DAY=$(date +%u)  # Get current day of the week (1=Monday, 5=Friday)
 
           if [ "$DAY" -eq 5 ]; then
@@ -40,7 +47,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add "$FILE"
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          git add "$FILE" || echo "No changes to add"
           git commit -m "Automated update for line 2 and 3 based on schedule" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
-          git push origin main
+          git push origin main || echo "No changes to push"
