@@ -3,9 +3,9 @@ name: Comment and Uncomment Lines for example1.txt
 on:
   schedule:
     # Schedule for 8:40 PM to 8:45 PM IST (3:10 PM to 3:15 PM UTC)
-    - cron: "15 21 * * 5"
+    - cron: "10 15 * * 5"
     # Schedule for 8:50 PM to 8:55 PM IST (3:20 PM to 3:25 PM UTC)
-    - cron: "20 21 * * 5"
+    - cron: "20 15 * * 5"
   workflow_dispatch:  # Allow manual trigger for testing
 
 jobs:
