@@ -1,7 +1,9 @@
 name: Comment and Uncomment Lines for example1.txt
 
 on:
-  workflow_dispatch:  # Enable manual trigger
+  schedule:
+    - cron: "25,30 12 * * 5" # 6:25 PM and 6:30 PM IST on Fridays (12:25 and 12:30 UTC)
+  workflow_dispatch: # Enable manual trigger
 
 jobs:
   modify-file:
@@ -10,29 +12,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug:Check file content before modification
+      - name: Modify file based on time
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
-          echo "File content before modification:"
-          if [ -f "$FILE" ]; then
-            cat "$FILE"
-          else
-            echo "File not found: $FILE"
-            exit 1
-          fi
+          CURRENT_MINUTE=$(date +%M)
+          echo "Current minute: $CURRENT_MINUTE"
 
-      - name: Modify file based on simulated day
-        run: |
-          FILE="$GITHUB_WORKSPACE/example1.txt"
-          DAY=5  # Simulate Friday for testing
-          if [ "$DAY" -eq 5 ]; then
-            echo "It's Friday evening. Commenting lines..."
+          if [ "$CURRENT_MINUTE" -eq 25 ]; then
+            echo "It's 6:25 PM IST. Commenting lines..."
             sed -i '2s/^/# /' "$FILE"
             sed -i '3s/^/# /' "$FILE"
-          elif [ "$DAY" -eq 1 ]; then
-            echo "It's Monday morning. Uncommenting lines..."
+          elif [ "$CURRENT_MINUTE" -eq 30 ]; then
+            echo "It's 6:30 PM IST. Uncommenting lines..."
             sed -i '3s/^# //' "$FILE"
             sed -i '2s/^# //' "$FILE"
+          else
+            echo "No action needed."
           fi
 
       - name: Debug:Check file content after modification
@@ -45,6 +40,7 @@ jobs:
             echo "File not found: $FILE"
             exit 1
           fi
+
       - name: Set up Git
         run: |
           git config --global user.name "GitHub Actions Bot"
@@ -54,6 +50,6 @@ jobs:
         run: |
           FILE="$GITHUB_WORKSPACE/example1.txt"
           git add "$FILE"
-          git commit -m "Automated update for example1.txt based on schedule" || echo "No changes to commit"
+          git commit -m "Automated update for example1.txt based on time" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
           git push origin main || echo "No changes to push"
