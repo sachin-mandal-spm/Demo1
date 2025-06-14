@@ -17,11 +17,11 @@ jobs:
       - name: Comment 'hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^#hello3' "$FILE"; then
+          if grep -q '^# hello3' "$FILE"; then
             echo "'hello3' is already commented. Skipping..."
           else
             echo "Commenting 'hello3'."
-            sed -i '/hello3/s/^/#/' "$FILE"
+            sed -i '/hello3/s/^/# /' "$FILE"
           fi
 
       - name: Commit and push changes for 'hello3'
@@ -44,9 +44,9 @@ jobs:
       - name: Comment 'hello4' if 'hello3' is commented
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^#hello3' "$FILE"; then
+          if grep -q '^# hello3' "$FILE"; then
             echo "'hello3' is commented. Proceeding to comment 'hello4'."
-            sed -i '/hello4/s/^/#/' "$FILE"
+            sed -i '/hello4/s/^/# /' "$FILE"
           else
             echo "'hello3' is not commented. Skipping 'hello4'."
           fi
