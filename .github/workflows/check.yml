@@ -2,8 +2,8 @@ name: Scheduled Comments on File
 
 on:
   schedule:
-    - cron: "30 13 * * 6" # First schedule for 'hello3'
-    - cron: "0 14 * * 6"  # Second schedule for 'hello4'
+    - cron: "0 10 * * 0" # First schedule for 'hello3' at 10:00 AM on Sunday
+    - cron: "30 10 * * 0" # Second schedule for 'hello4' at 10:30 AM on Sunday
   workflow_dispatch: # Allows manual trigger
 
 jobs:
