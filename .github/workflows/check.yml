@@ -1,0 +1,58 @@
+name: Scheduled Comments on File
+
+on:
+  schedule:
+    # Schedule for every Saturday
+    - cron: "30 13 * * 6" # 7 PM IST
+    - cron: "0 14 * * 6"  # 7:30 PM IST
+
+jobs:
+  comment-words:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Comment 'hello3' at 7 PM IST
+        if: github.event.schedule == "30 13 * * 6"
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          if grep -q '^# hello3' "$FILE"; then
+            echo "'hello3' is already commented. Skipping..."
+          else
+            echo "Commenting 'hello3'."
+            sed -i '/hello3/s/^/# /' "$FILE"
+          fi
+
+      - name: Commit and push 'hello3' changes
+        if: github.event.schedule == "30 13 * * 6"
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add "$FILE"
+          git commit -m "Automated update: Commented 'hello3'" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+          git push origin main || echo "No changes to push"
+
+      - name: Comment 'hello4' at 7:30 PM IST if 'hello3' is commented
+        if: github.event.schedule == "0 14 * * 6"
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          if grep -q '^# hello3' "$FILE"; then
+            echo "'hello3' is commented. Proceeding to comment 'hello4'."
+            sed -i '/hello4/s/^/# /' "$FILE"
+          else
+            echo "'hello3' is not commented. Skipping 'hello4'."
+          fi
+
+      - name: Commit and push 'hello4' changes
+        if: github.event.schedule == "0 14 * * 6"
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add "$FILE"
+          git commit -m "Automated update: Commented 'hello4'" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
+          git push origin main || echo "No changes to push"
