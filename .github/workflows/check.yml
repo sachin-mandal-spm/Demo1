@@ -3,18 +3,18 @@ name: Scheduled Comments on File
 on:
   schedule:
     # Schedule for every Saturday
-    - cron: "30 13 * * 6" # 7 PM IST
-    - cron: "0 14 * * 6"  # 7:30 PM IST
+    - cron: "30 13 * * 6" # 7 PM IST for 'hello3'
+    - cron: "0 14 * * 6"  # 7:30 PM IST for 'hello4'
   workflow_dispatch:
+
 jobs:
-  comment-words:
+  comment-hello3:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Comment 'hello3' at 7 PM IST
-        if: github.event.schedule == "30 13 * * 6"
+      - name: Comment 'hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           if grep -q '^# hello3' "$FILE"; then
@@ -24,8 +24,7 @@ jobs:
             sed -i '/hello3/s/^/# /' "$FILE"
           fi
 
-      - name: Commit and push 'hello3' changes
-        if: github.event.schedule == "30 13 * * 6"
+      - name: Commit and push changes for 'hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           git config --global user.name "GitHub Actions Bot"
@@ -35,8 +34,14 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
           git push origin main || echo "No changes to push"
 
-      - name: Comment 'hello4' at 7:30 PM IST if 'hello3' is commented
-        if: github.event.schedule == "0 14 * * 6"
+  comment-hello4:
+    needs: comment-hello3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Comment 'hello4' if 'hello3' is commented
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           if grep -q '^# hello3' "$FILE"; then
@@ -46,8 +51,7 @@ jobs:
             echo "'hello3' is not commented. Skipping 'hello4'."
           fi
 
-      - name: Commit and push 'hello4' changes
-        if: github.event.schedule == "0 14 * * 6"
+      - name: Commit and push changes for 'hello4'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           git config --global user.name "GitHub Actions Bot"
