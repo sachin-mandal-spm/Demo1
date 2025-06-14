@@ -22,7 +22,7 @@ jobs:
       - name: Comment 'hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^# ?hello3' "$FILE"; then
+          if grep -q '^# *hello3' "$FILE"; then
             echo "'hello3' is already commented. Skipping..."
           else
             echo "Commenting 'hello3'."
@@ -41,7 +41,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git add example.txt
           git commit -m "Commented 'hello3'" || echo "No changes to commit"
-          git push
+          git push origin main
 
   comment-hello4:
     needs: comment-hello3
@@ -49,6 +49,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Debug:Show file content before commenting 'hello4'
         run: |
@@ -59,7 +61,7 @@ jobs:
       - name: Comment 'hello4' if 'hello3' is commented
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^# ?hello3' "$FILE"; then
+          if grep -q '^# *hello3' "$FILE"; then
             echo "'hello3' is commented. Proceeding to comment 'hello4'."
             sed -i '/hello4/s/^/# /' "$FILE"
           else
@@ -78,4 +80,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git add example.txt
           git commit -m "Commented 'hello4'" || echo "No changes to commit"
-          git push
+          git push origin main
