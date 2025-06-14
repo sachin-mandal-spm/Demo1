@@ -1,0 +1,48 @@
+name: Detect Comment in File
+
+on:
+  workflow_dispatch:  # Allows manual trigger for testing
+
+jobs:
+  detect-comment:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Display the initial file content
+      - name: Debug:Show initial file content
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "Initial file content:"
+          cat "$FILE"
+
+      # Step 3: Detect if 'hello3' is commented
+      - name: Detect Comment
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          if grep -q '^# *hello3' "$FILE"; then
+            echo "'hello3' is already commented."
+          else
+            echo "'hello3' is not commented."
+          fi
+
+      # Step 4: Optionally, uncomment or comment 'hello3'
+      - name: Toggle Comment on 'hello3'
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          if grep -q '^# *hello3' "$FILE"; then
+            echo "Uncommenting 'hello3'."
+            sed -i '/# *hello3/s/^# //' "$FILE"
+          else
+            echo "Commenting 'hello3'."
+            sed -i '/hello3/s/^/# /' "$FILE"
+          fi
+
+      # Step 5: Display the updated file content
+      - name: Debug:Show updated file content
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "Updated file content:"
+          cat "$FILE"
