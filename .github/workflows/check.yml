@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Debug:Show file content before commenting 'hello3'
         run: |
@@ -19,7 +21,7 @@ jobs:
           echo "Raw file content before commenting 'hello3':"
           cat "$FILE"
 
-      - name: Comment 'hello3'
+      - name: Detect and Comment 'hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           if grep -q '^# *hello3' "$FILE"; then
@@ -35,7 +37,7 @@ jobs:
           echo "File content after commenting 'hello3':"
           cat "$FILE"
 
-      - name: Commit and push changes for 'hello3'
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
@@ -58,12 +60,17 @@ jobs:
           echo "Raw file content before commenting 'hello4':"
           cat "$FILE"
 
-      - name: Comment 'hello4' if 'hello3' is commented
+      - name: Detect and Comment 'hello4' if 'hello3' is commented
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
           if grep -q '^# *hello3' "$FILE"; then
             echo "'hello3' is commented. Proceeding to comment 'hello4'."
-            sed -i '/hello4/s/^/# /' "$FILE"
+            if grep -q '^# *hello4' "$FILE"; then
+              echo "'hello4' is already commented. Skipping..."
+            else
+              echo "Commenting 'hello4'."
+              sed -i '/hello4/s/^/# /' "$FILE"
+            fi
           else
             echo "'hello3' is not commented. Skipping 'hello4'."
           fi
@@ -74,7 +81,7 @@ jobs:
           echo "File content after commenting 'hello4':"
           cat "$FILE"
 
-      - name: Commit and push changes for 'hello4'
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
