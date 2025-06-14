@@ -14,15 +14,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Debug:File content before commenting 'hello3'
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "File content before commenting 'hello3':"
+          cat "$FILE"
+
       - name: Comment 'hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^# hello3' "$FILE"; then
-            echo "'hello3' is already commented. Skipping..."
-          else
+          if grep -qx 'hello3' "$FILE"; then
             echo "Commenting 'hello3'."
             sed -i '/^hello3$/s/^/# /' "$FILE"
+          else
+            echo "'hello3' not found in the file. Skipping..."
           fi
+
+      - name: Debug:File content after commenting 'hello3'
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "File content after commenting 'hello3':"
+          cat "$FILE"
 
       - name: Commit and push changes for 'hello3'
         run: |
@@ -41,15 +53,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Debug:File content before commenting 'hello4'
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "File content before commenting 'hello4':"
+          cat "$FILE"
+
       - name: Comment 'hello4' if 'hello3' is commented
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^# hello3' "$FILE"; then
+          if grep -qx '# hello3' "$FILE"; then
             echo "'hello3' is commented. Proceeding to comment 'hello4'."
             sed -i '/^hello4$/s/^/# /' "$FILE"
           else
             echo "'hello3' is not commented. Skipping 'hello4'."
           fi
+
+      - name: Debug:File content after commenting 'hello4'
+        run: |
+          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "File content after commenting 'hello4':"
+          cat "$FILE"
 
       - name: Commit and push changes for 'hello4'
         run: |
