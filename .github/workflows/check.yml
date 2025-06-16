@@ -2,39 +2,27 @@ name: Scheduled Comments on File
 
 on:
   schedule:
-    - cron: "30 7 * * 0" # 1:00 PM IST for 'hello3'
-    - cron: "0 8 * * 0"  # 1:30 PM IST for 'hello4'
+    - cron: "30 7 * * 0" # Single schedule at 1:00 PM IST on Sunday
   workflow_dispatch: # Allows manual trigger
 
 jobs:
-  comment-hello3:
-    if: ${{ github.event.schedule == '30 7 * * 0' }}
+  comment-hello:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug:Show file content before commenting 'hello3'
+      - name: Run 'comment-hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content before commenting 'hello3':"
-          cat "$FILE"
-
-      - name: Comment 'hello3'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "Running job 'comment-hello3' at $(date)"
           if grep -q '^# *hello3' "$FILE"; then
             echo "'hello3' is already commented. Skipping..."
           else
             echo "Commenting 'hello3'."
             sed -i '/hello3/s/^/# /' "$FILE"
           fi
-
-      - name: Debug:Show file content after commenting 'hello3'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content after commenting 'hello3':"
-          cat "$FILE"
+        id: comment-hello3
 
       - name: Commit and push changes for 'hello3'
         run: |
@@ -44,44 +32,19 @@ jobs:
           git commit -m "Commented 'hello3'" || echo "No changes to commit"
           git push origin main
 
-  comment-hello4:
-    if: ${{ github.event.schedule == '0 8 * * 0' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - name: Wait for 30 minutes
+        run: sleep 1800 # 30 minutes in seconds
 
-      - name: Wait for sync
-        run: sleep 10
-
-      - name: Fetch latest changes
-        run: |
-          git fetch --all
-          git reset --hard origin/main
-
-      - name: Debug:Show file content before commenting 'hello4'
+      - name: Run 'comment-hello4'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content before commenting 'hello4':"
-          cat "$FILE"
-
-      - name: Comment 'hello4' if 'hello3' is commented
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          if grep -q '^# *hello3' "$FILE"; then
-            echo "'hello3' is commented. Proceeding to comment 'hello4'."
-            sed -i '/hello4/s/^/# /' "$FILE"
+          echo "Running job 'comment-hello4' at $(date)"
+          if grep -q '^# *hello4' "$FILE"; then
+            echo "'hello4' is already commented. Skipping..."
           else
-            echo "'hello3' is not commented. Skipping 'hello4'."
+            echo "Commenting 'hello4'."
+            sed -i '/hello4/s/^/# /' "$FILE"
           fi
-
-      - name: Debug:Show file content after commenting 'hello4'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content after commenting 'hello4':"
-          cat "$FILE"
 
       - name: Commit and push changes for 'hello4'
         run: |
