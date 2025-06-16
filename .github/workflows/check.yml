@@ -2,12 +2,13 @@ name: Scheduled Comments on File
 
 on:
   schedule:
-    - cron: "30 7 * * 0" # First schedule for 'hello3' at 1:00 PM IST on Sunday
-    - cron: "0 8 * * 0" # Second schedule for 'hello4' at 1:30 PM IST on Sunday
+    - cron: "30 7 * * 0" # 1:00 PM IST for 'hello3'
+    - cron: "0 8 * * 0"  # 1:30 PM IST for 'hello4'
   workflow_dispatch: # Allows manual trigger
 
 jobs:
   comment-hello3:
+    if: ${{ github.event.schedule == '30 7 * * 0' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -44,7 +45,7 @@ jobs:
           git push origin main
 
   comment-hello4:
-    needs: comment-hello3
+    if: ${{ github.event.schedule == '0 8 * * 0' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
