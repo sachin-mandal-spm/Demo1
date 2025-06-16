@@ -2,37 +2,27 @@ name: Scheduled Uncomments on File
 
 on:
   schedule:
-    - cron: "0 9 * * 0" # Schedule at 2:30 PM IST on Sunday
+    - cron: "0 9 * * 0" # Single schedule at 2:30 PM IST on Sunday
   workflow_dispatch: # Allows manual trigger
 
 jobs:
-  uncomment-hello4:
+  uncomment-hello:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug:Show file content before uncommenting 'hello4'
+      - name: Run 'uncomment-hello4'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content before uncommenting 'hello4':"
-          cat "$FILE"
-
-      - name: Uncomment 'hello4'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "Running job 'uncomment-hello4' at $(date)"
           if grep -q '^# *hello4' "$FILE"; then
             echo "Uncommenting 'hello4'."
             sed -i '/# *hello4/s/^# *//' "$FILE"
           else
             echo "'hello4' is already uncommented. Skipping..."
           fi
-
-      - name: Debug:Show file content after uncommenting 'hello4'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content after uncommenting 'hello4':"
-          cat "$FILE"
+        id: uncomment-hello4
 
       - name: Commit and push changes for 'hello4'
         run: |
@@ -42,44 +32,19 @@ jobs:
           git commit -m "Uncommented 'hello4'" || echo "No changes to commit"
           git push origin main
 
-  uncomment-hello3:
-    needs: uncomment-hello4
-    runs-on: ubuntu-latest
-    steps:
       - name: Wait for 30 minutes
-        run: sleep 1800
+        run: sleep 60 # 30 minutes in seconds
 
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Fetch latest changes
-        run: |
-          git fetch --all
-          git reset --hard origin/main
-
-      - name: Debug:Show file content before uncommenting 'hello3'
+      - name: Run 'uncomment-hello3'
         run: |
           FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content before uncommenting 'hello3':"
-          cat "$FILE"
-
-      - name: Uncomment 'hello3'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
+          echo "Running job 'uncomment-hello3' at $(date)"
           if grep -q '^# *hello3' "$FILE"; then
             echo "Uncommenting 'hello3'."
             sed -i '/# *hello3/s/^# *//' "$FILE"
           else
             echo "'hello3' is already uncommented. Skipping..."
           fi
-
-      - name: Debug:Show file content after uncommenting 'hello3'
-        run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "File content after uncommenting 'hello3':"
-          cat "$FILE"
 
       - name: Commit and push changes for 'hello3'
         run: |
