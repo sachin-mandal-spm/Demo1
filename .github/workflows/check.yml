@@ -33,7 +33,7 @@ jobs:
           git push origin main
 
       - name: Wait for 30 minutes
-        run: sleep 1800 # 30 minutes in seconds
+        run: sleep 60 # 30 minutes in seconds
 
       - name: Run 'comment-hello4'
         run: |
