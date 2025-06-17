@@ -2,20 +2,21 @@ name: Scheduled Comments Dynamically
 
 on:
   schedule:
-    - cron: "30 7 * * 0"
+    - cron: "30 7 * * 0" # Every Sunday at 1:00 PM IST
   workflow_dispatch:
 
 jobs:
-  comment-non-infra:
+  comment-dynamic:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Comment non-infra .yaml files
+      - name: Run 'comment-non-infra'
         run: |
           FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
-          echo "Commenting non-infra .yaml files at $(date)"
+          echo "Running job 'comment-non-infra' at $(date)"
+          echo "Commenting all .yaml files that do NOT contain 'infra'"
           awk '
             BEGIN { in_resources=0 }
             /^[[:space:]]*resources:/ { in_resources=1; print; next }
@@ -31,8 +32,9 @@ jobs:
             }
             { print }
           ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+        id: comment-non-infra
 
-      - name: Commit and push changes
+      - name: Commit and push changes for 'comment-non-infra'
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
@@ -40,20 +42,14 @@ jobs:
           git commit -m "Commented non-infra .yaml files" || echo "No changes to commit"
           git push origin main
 
-  comment-infra:
-    needs: comment-non-infra
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Wait 60 seconds
+      - name: Wait for 60 seconds
         run: sleep 60
 
-      - name: Comment infra .yaml files
+      - name: Run 'comment-infra'
         run: |
           FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
-          echo "Commenting infra .yaml files at $(date)"
+          echo "Running job 'comment-infra' at $(date)"
+          echo "Commenting all .yaml files that DO contain 'infra'"
           awk '
             BEGIN { in_resources=0 }
             /^[[:space:]]*resources:/ { in_resources=1; print; next }
@@ -67,15 +63,12 @@ jobs:
             }
             { print }
           ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+        id: comment-infra
 
-      - name: Commit and push changes
+      - name: Commit and push changes for 'comment-infra'
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git stash
-          git fetch origin
-          git merge origin/main --no-edit || echo "Merge completed with conflicts resolved"
-          git stash pop || echo "Nothing to pop"
           git add dynamicfile.yml
           git commit -m "Commented infra .yaml files" || echo "No changes to commit"
           git push origin main
