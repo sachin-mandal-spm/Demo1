@@ -3,10 +3,10 @@ kind: Kustomization
 resources:
   #  - secrets.yaml
   #  - infra.yaml
-  #  - primary-infra.yaml
+                - primary-infra.yaml
   #  - app-repo.yaml
   #  - customer-a.yaml
-  #  - customer-b.yaml
+            - customer-b.yaml
   #  - sachin.yaml
   
 generatorOptions:
