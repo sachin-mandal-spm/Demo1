@@ -18,12 +18,14 @@ jobs:
           echo "Commenting non-infra .yaml files at $(date)"
           awk '
             BEGIN { in_resources=0 }
-            /^resources:/ { in_resources=1; print; next }
-            in_resources && /^  - .*\.yaml/ {
+            /^[[:space:]]*resources:/ { in_resources=1; print; next }
+            in_resources && /^[[:space:]]*[-#][[:space:]]*-?[[:space:]]*.*\.yaml/ {
               if ($0 ~ /infra/) {
                 print
+              } else if ($0 !~ /^[[:space:]]*#/) {
+                print gensub(/^([[:space:]]*)-/, "\\1# -", 1)
               } else {
-                print "  #"$0
+                print
               }
               next
             }
@@ -54,9 +56,13 @@ jobs:
           echo "Commenting infra .yaml files at $(date)"
           awk '
             BEGIN { in_resources=0 }
-            /^resources:/ { in_resources=1; print; next }
+            /^[[:space:]]*resources:/ { in_resources=1; print; next }
             in_resources && $0 ~ /infra.*\.yaml/ {
-              print "  #"$0
+              if ($0 !~ /^[[:space:]]*#/) {
+                print gensub(/^([[:space:]]*)-/, "\\1# -", 1)
+              } else {
+                print
+              }
               next
             }
             { print }
