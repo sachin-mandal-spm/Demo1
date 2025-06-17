@@ -1,17 +1,69 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - secrets.yaml
-  - infra.yaml
-  - primary-infra.yaml
-  - app-repo.yaml
-  - customer-a.yaml
-  - customer-b.yaml
-  
-generatorOptions:
-  disableNameSuffixHash: true
+on:
+  schedule:
+    - cron: "30 7 * * 0"
+  workflow_dispatch:
 
-configMapGenerator:
-- name: ${product}-${locationShort}-${environment}-env-vars
-  envs:
-  - .env
+jobs:
+  comment-non-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Comment non-infra .yaml files
+        run: |
+          FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
+          echo "Commenting non-infra .yaml files at $(date)"
+          awk '
+            BEGIN { in_resources=0 }
+            /^resources:/ { in_resources=1; print; next }
+            in_resources && /^  - .*\.yaml/ {
+              if ($0 ~ /infra/) {
+                print
+              } else {
+                print "  #"$0
+              }
+              next
+            }
+            { print }
+          ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add dynamicfile.yml
+          git commit -m "Commented non-infra .yaml files" || echo "No changes to commit"
+          git push origin main
+
+  comment-infra:
+    needs: comment-non-infra
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Wait 60 seconds
+        run: sleep 60
+
+      - name: Comment infra .yaml files
+        run: |
+          FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
+          echo "Commenting infra .yaml files at $(date)"
+          awk '
+            BEGIN { in_resources=0 }
+            /^resources:/ { in_resources=1; print; next }
+            in_resources && /^  - .*infra.*\.yaml/ {
+              print "  #"$0
+              next
+            }
+            { print }
+          ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add dynamicfile.yml
+          git commit -m "Commented infra .yaml files" || echo "No changes to commit"
+          git push origin main
