@@ -4,7 +4,6 @@ resources:
   #  - secrets.yaml
   - infra.yaml
   - primary-infra.yaml
-  - piyu-infra.yaml
   #  - app-repo.yaml
   #  - customer-a.yaml
   #  - customer-b.yaml
