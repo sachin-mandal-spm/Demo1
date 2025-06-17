@@ -1,13 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-    # - secrets.yaml
-    # - infra.yaml
-                  # - primary-infra.yaml
-    # - app-repo.yaml
-    # - customer-a.yaml
-            # - customer-b.yaml
-    # - sachin.yaml
+  - secrets.yaml
+  - infra.yaml
+  - primary-infra.yaml
+  - pri-infra.yaml
+  - app-repo.yaml
+  - customer-a.yaml
+  - customer-b.yaml
+  - sachin.yaml
   
 generatorOptions:
   disableNameSuffixHash: true
@@ -16,7 +17,3 @@ configMapGenerator:
 - name: ${product}-${locationShort}-${environment}-env-vars
   envs:
   - .env
-
-
-
-
