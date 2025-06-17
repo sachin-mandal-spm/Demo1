@@ -2,7 +2,7 @@ name: Scheduled Comments Dynamically
 
 on:
   schedule:
-    - cron: "30 7 * * 0"
+    - cron: "30 7 * * 0" # Every Sunday at 1:00 PM IST
   workflow_dispatch:
 
 jobs:
@@ -45,8 +45,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Wait 30 seconds
-        run: sleep 30
+      - name: Wait 60 seconds
+        run: sleep 60
 
       - name: Comment infra .yaml files
         run: |
@@ -55,7 +55,7 @@ jobs:
           awk '
             BEGIN { in_resources=0 }
             /^resources:/ { in_resources=1; print; next }
-            in_resources && /^  - .*infra.*\.yaml/ {
+            in_resources && $0 ~ /infra.*\.yaml/ {
               print "  #"$0
               next
             }
@@ -66,6 +66,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
+          git pull origin main --no-rebase --no-edit || echo "Nothing to pull"
           git add dynamicfile.yml
           git commit -m "Commented infra .yaml files" || echo "No changes to commit"
           git push origin main
