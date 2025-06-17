@@ -1,55 +1,69 @@
-name: Scheduled Comments on File
+name: Scheduled Comments Dynamically
 
 on:
   schedule:
-    - cron: "30 7 * * 0" # Single schedule at 1:00 PM IST on Sunday
-  workflow_dispatch: # Allows manual trigger
+    - cron: "30 7 * * 0" # Every Sunday at 1:00 PM IST
+  workflow_dispatch:
 
 jobs:
-  comment-hello:
+  comment-dynamic:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run 'comment-hello3'
+      - name: Run 'comment-non-infra'
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "Running job 'comment-hello3' at $(date)"
-          if grep -q '^# *hello3' "$FILE"; then
-            echo "'hello3' is already commented. Skipping..."
-          else
-            echo "Commenting 'hello3'."
-            sed -i '/hello3/s/^/# /' "$FILE"
-          fi
-        id: comment-hello3
+          FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
+          echo "Running job 'comment-non-infra' at $(date)"
+          echo "Commenting all .yaml files that do NOT contain 'infra'"
+          awk '
+            BEGIN { in_resources=0 }
+            /^resources:/ { in_resources=1; print; next }
+            in_resources && /^  - .*\.yaml/ {
+              if ($0 ~ /infra/) {
+                print
+              } else {
+                print "  #"$0
+              }
+              next
+            }
+            { print }
+          ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+        id: comment-non-infra
 
-      - name: Commit and push changes for 'hello3'
+      - name: Commit and push changes for 'comment-non-infra'
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git add example.txt
-          git commit -m "Commented 'hello3'" || echo "No changes to commit"
+          git add dynamicfile.yml
+          git commit -m "Commented non-infra .yaml files" || echo "No changes to commit"
           git push origin main
 
-      - name: Wait for 30 minutes
-        run: sleep 60 # 30 minutes in seconds
+      - name: Wait for 60 seconds
+        run: sleep 60
 
-      - name: Run 'comment-hello4'
+      - name: Run 'comment-infra'
         run: |
-          FILE="$GITHUB_WORKSPACE/example.txt"
-          echo "Running job 'comment-hello4' at $(date)"
-          if grep -q '^# *hello4' "$FILE"; then
-            echo "'hello4' is already commented. Skipping..."
-          else
-            echo "Commenting 'hello4'."
-            sed -i '/hello4/s/^/# /' "$FILE"
-          fi
+          FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
+          echo "Running job 'comment-infra' at $(date)"
+          echo "Commenting all .yaml files that DO contain 'infra'"
+          awk '
+            BEGIN { in_resources=0 }
+            /^resources:/ { in_resources=1; print; next }
+            in_resources && /^  - .*infra.*\.yaml/ {
+              print "  #"$0
+              next
+            }
+            { print }
+          ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+        id: comment-infra
 
-      - name: Commit and push changes for 'hello4'
+      - name: Commit and push changes for 'comment-infra'
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git add example.txt
-          git commit -m "Commented 'hello4'" || echo "No changes to commit"
+          git add dynamicfile.yml
+          git commit -m "Commented infra .yaml files" || echo "No changes to commit"
+          git pull origin main --rebase || echo "No remote changes to rebase"
           git push origin main
