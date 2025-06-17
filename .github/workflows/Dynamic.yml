@@ -66,7 +66,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git pull origin main --rebase
           git add dynamicfile.yml
+          git pull origin main --rebase
           git commit -m "Commented infra .yaml files" || echo "No changes to commit"
           git push origin main
