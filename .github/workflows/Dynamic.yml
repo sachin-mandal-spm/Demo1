@@ -2,7 +2,7 @@ name: Scheduled Comments Dynamically
 
 on:
   schedule:
-    - cron: "30 7 * * 0" # Every Sunday at 1:00 PM IST
+    - cron: "30 7 * * 0"
   workflow_dispatch:
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
             { print }
           ' "$FILE" > temp.yml && mv temp.yml "$FILE"
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
@@ -62,11 +62,10 @@ jobs:
             { print }
           ' "$FILE" > temp.yml && mv temp.yml "$FILE"
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           git add dynamicfile.yml
           git commit -m "Commented infra .yaml files" || echo "No changes to commit"
-          git pull origin main --rebase || echo "No remote changes to rebase"
           git push origin main
