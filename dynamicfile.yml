@@ -3,8 +3,8 @@ kind: Kustomization
 resources:
      # - secrets.yaml
                  # - infra.yaml
-                     - primary-infra.yaml
-     - pri-infra.yaml
+                     # - primary-infra.yaml
+     # - pri-infra.yaml
                 # - app-repo.yaml
      # - customer-a.yaml
  #  - sachin.yaml
