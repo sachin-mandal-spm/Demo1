@@ -8,7 +8,7 @@ resources:
   - app-repo.yaml
   - customer-a.yaml
   - customer-b.yaml
-  -sachin.yaml
+  - sachin.yaml
   
 generatorOptions:
   disableNameSuffixHash: true
