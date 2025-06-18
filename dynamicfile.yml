@@ -1,19 +1,44 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-       - secrets.yaml
-                   # - infra.yaml
-                       # - primary-infra.yaml
-       # - pri-infra.yaml
-                  # - app-repo.yaml
-       # - customer-a.yaml
-    - sachin.yaml
-       # - customer-b.yaml
-  
+  - secrets.yaml
+  - infra.yaml
+  - primary-infra.yaml
+  - app-repo.yaml
+  - customer-a.yaml
+  - customer-b.yaml
+
 generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: ${product}-${locationShort}-${environment}-env-vars
+- name: ${product}-${locationShort}-${environment}-team-info-env-vars
   envs:
-  - .env
+  - env-files/team-info/team-info.env
+- name: ${product}-${locationShort}-${environment}-aks-info-env-vars
+  envs:
+  - env-files/infra-info/aks/aks-info.env
+- name: ${product}-${locationShort}-${environment}-common-info-env-vars
+  envs:
+  - env-files/infra-info/common/common-info.env
+- name: ${product}-${locationShort}-${environment}-keyvault-info-env-vars
+  envs:
+  - env-files/infra-info/keyvault/keyvault-info.env
+- name: ${product}-${locationShort}-${environment}-pgfsdb-info-env-vars
+  envs:
+  - env-files/infra-info/postgres-sql-db/postgres-sql-db-info.env
+- name: ${product}-${locationShort}-${environment}-sa-info-env-vars
+  envs:
+  - env-files/infra-info/storage-account/storage-account-info.env
+- name: ${product}-${locationShort}-${environment}-vm-info-env-vars
+  envs:
+  - env-files/infra-info/virtual-machine/virtual-machine-info.env
+- name: ${product}-${locationShort}-${environment}-app-gw-info-env-vars
+  envs:
+  - env-files/infra-info/application-gateway/app-gw-info.env
+- name: ${product}-${locationShort}-${environment}-customer-a-info-env-vars
+  envs:
+  - env-files/tenant-info/customer-a-info.env
+- name: ${product}-${locationShort}-${environment}-customer-b-info-env-vars
+  envs:
+  - env-files/tenant-info/customer-b-info.env
