@@ -16,14 +16,14 @@ jobs:
         run: |
           FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
           echo "Running job 'comment-non-infra' at $(date)"
-          echo "Commenting all .yaml files that do NOT contain 'infra'"
+          echo "Commenting all .yaml files that do NOT contain 'infra' AND contain 'customer' OR 'app'"
           awk '
             BEGIN { in_resources=0 }
             /^[[:space:]]*resources:/ { in_resources=1; print; next }
             in_resources && /^[[:space:]]*[-#][[:space:]]*-?[[:space:]]*.*\.yaml/ {
               if ($0 ~ /infra/) {
                 print
-              } else if ($0 !~ /^[[:space:]]*#/) {
+              } else if (($0 ~ /customer/ || $0 ~ /app/) && $0 !~ /^[[:space:]]*#/) {
                 print gensub(/^([[:space:]]*)-/, "\\1# -", 1)
               } else {
                 print
@@ -39,7 +39,7 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           git add dynamicfile.yml
-          git commit -m "Commented non-infra .yaml files" || echo "No changes to commit"
+          git commit -m "Commented non-infra .yaml files with customer or app" || echo "No changes to commit"
           git push origin main
 
       - name: Wait for 60 seconds
