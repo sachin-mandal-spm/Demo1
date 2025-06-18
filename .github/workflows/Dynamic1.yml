@@ -34,7 +34,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git add dynamicfile.yml
           git commit -m "Uncommented infra .yaml files" || echo "No changes to commit"
-          git push origin main
+          git push origin HEAD
 
       - name: Wait for 60 seconds
         run: sleep 60
@@ -60,11 +60,10 @@ jobs:
             { print }
           ' "$FILE" > temp.yml && mv temp.yml "$FILE"
         id: uncomment-non-infra
-
       - name: Commit and push changes for 'uncomment-non-infra'
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           git add dynamicfile.yml
           git commit -m "Uncommented non-infra .yaml files with customer or app" || echo "No changes to commit"
-          git push origin main
+          git push origin HEAD
