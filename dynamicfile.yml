@@ -5,10 +5,10 @@ resources:
                    - infra.yaml
                        - primary-infra.yaml
        - pri-infra.yaml
-                  - app-repo.yaml
-       - customer-a.yaml
+                  # - app-repo.yaml
+       # - customer-a.yaml
     - sachin.yaml
-       - customer-b.yaml
+       # - customer-b.yaml
   
 generatorOptions:
   disableNameSuffixHash: true
