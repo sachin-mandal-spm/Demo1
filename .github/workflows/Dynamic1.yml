@@ -1,0 +1,70 @@
+name: Scheduled Uncomment Dynamically
+
+on:
+  schedule:
+    - cron: "45 7 * * 0" # Every Sunday at 1:15 PM IST
+  workflow_dispatch:
+
+jobs:
+  uncomment-dynamic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run 'uncomment-infra'
+        run: |
+          FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
+          echo "Running job 'uncomment-infra' at $(date)"
+          echo "Uncommenting all .yaml files that DO contain 'infra'"
+          awk '
+            BEGIN { in_resources=0 }
+            /^[[:space:]]*resources:/ { in_resources=1; print; next }
+            in_resources && /^[[:space:]]*#?[[:space:]]*-?[[:space:]]*.*infra.*\.yaml/ {
+              print gensub(/^([[:space:]]*)#?[[:space:]]*-/, "\\1- ", 1)
+              next
+            }
+            { print }
+          ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+        id: uncomment-infra
+
+      - name: Commit and push changes for 'uncomment-infra'
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add dynamicfile.yml
+          git commit -m "Uncommented infra .yaml files" || echo "No changes to commit"
+          git push origin main
+
+      - name: Wait for 60 seconds
+        run: sleep 60
+
+      - name: Run 'uncomment-non-infra'
+        run: |
+          FILE="$GITHUB_WORKSPACE/dynamicfile.yml"
+          echo "Running job 'uncomment-non-infra' at $(date)"
+          echo "Uncommenting all .yaml files that do NOT contain 'infra' AND contain 'customer' OR 'app'"
+          awk '
+            BEGIN { in_resources=0 }
+            /^[[:space:]]*resources:/ { in_resources=1; print; next }
+            in_resources && /^[[:space:]]*#?[[:space:]]*-?[[:space:]]*.*\.yaml/ {
+              if ($0 ~ /infra/) {
+                print
+              } else if ($0 ~ /customer/ || $0 ~ /app/) {
+                print gensub(/^([[:space:]]*)#?[[:space:]]*-/, "\\1- ", 1)
+              } else {
+                print
+              }
+              next
+            }
+            { print }
+          ' "$FILE" > temp.yml && mv temp.yml "$FILE"
+        id: uncomment-non-infra
+
+      - name: Commit and push changes for 'uncomment-non-infra'
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add dynamicfile.yml
+          git commit -m "Uncommented non-infra .yaml files with customer or app" || echo "No changes to commit"
+          git push origin main
