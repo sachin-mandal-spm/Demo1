@@ -1,4 +1,4 @@
-name: Scheduled Uncomment Dynamically
+name: Uncomment Dynamically
 
 on:
   schedule:
