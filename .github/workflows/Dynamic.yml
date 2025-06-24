@@ -2,7 +2,7 @@ name: Scheduled Comments Dynamically
 
 on:
   schedule:
-    - cron: "30 8 * * 4" # Every Thursady at 2:00 PM IST
+    - cron: "0 7 * * 2" # Every Tuesday at 12:30 PM IST
   workflow_dispatch:
 
 jobs:
