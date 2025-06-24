@@ -1,4 +1,4 @@
-name: Scheduled Comments Dynamically
+name: Comments Dynamically
 
 on:
   schedule:
