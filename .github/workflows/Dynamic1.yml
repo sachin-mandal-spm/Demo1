@@ -2,7 +2,7 @@ name: Scheduled Uncomment Dynamically
 
 on:
   schedule:
-    - cron: "0 9 * * 4" # Every Thursday at 2:30 PM IST
+    - cron: "30 7 * * 2" # Every Tuesday at 1:00 PM IST
   workflow_dispatch:
 
 jobs:
