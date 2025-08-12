@@ -4,9 +4,9 @@ resources:
   - secrets.yaml
   -        infra.yaml
   -        primary-infra.yaml
-  -        app-repo.yaml
-  -        customer-a.yaml
-  -        customer-b.yaml
+  # -        app-repo.yaml
+  # -        customer-a.yaml
+  # -        customer-b.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
