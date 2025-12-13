@@ -1,0 +1,52 @@
+services:
+  backend:
+    build: ./backend
+    container_name: spm-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/spm_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - spm-network
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    container_name: spm-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - spm-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: spm-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=spm_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - spm-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  spm-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
